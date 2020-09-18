@@ -1,0 +1,136 @@
+.Generator {
+  text-align: center;
+  font-family: Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+}
+
+header {
+  margin-bottom: 30px;
+}
+
+button {
+  padding: 20px 30px;
+  border: none;
+  background: red;
+  color: white;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  outline: none;
+}
+button:hover {
+  opacity: 0.7;
+}
+
+.grid-container {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-row {
+  width: 100%;
+}
+
+.Block {
+  width: 150px;
+  height: 150px;
+  /* margin: 2px; */
+  background: #f0f0f0;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  float: left;
+  background-position: center center;
+  background-size: cover;
+  position: relative;
+}
+.active {
+  opacity: 1;
+}
+.hasDoor:after {
+  content: "";
+  position: absolute;
+  transform: translateX(-50%);
+  bottom: -16px;
+  width: 60%;
+  height: 27%;
+  background-image: url("./images/door.png");
+  background-size: cover;
+  z-index: 1000;
+}
+.hasDoor.down:after {
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -16px;
+}
+.hasDoor.up:after {
+  left: 50%;
+  transform: translateX(-50%);
+  top: -20px;
+}
+.hasDoor.right:after {
+  right: -42px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+}
+.hasDoor.left:after {
+  left: -42px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.room {
+  background-image: url("./images/dungeon-tile-black.png");
+}
+
+.enterance {
+  background-image: url("./images/dungeon-tile-2.png");
+}
+
+.hallway {
+  background-image: url("./images/dungeon-tile-hall.png");
+}
+
+.hallway.bend {
+  background-image: url("./images/dungeon-hall-bend.png");
+}
+
+.hallway.bend.left-down {
+  transform: rotate(90deg);
+}
+.hallway.bend.down-left {
+  transform: rotate(-90deg);
+}
+.hallway.bend.right-up {
+  transform: rotate(-90deg);
+}
+.hallway.bend.up-right {
+  transform: rotate(90deg);
+}
+.hallway.bend.up-left {
+  transform: rotate(180deg);
+}
+.hallway.bend.right-down {
+  transform: rotate(180deg);
+}
+.hallway.right-right,
+.hallway.left-left {
+  transform: rotate(90deg);
+}
+
+.numberPlaceholder {
+  font-size: 12px;
+  color: black;
+}
+
+.room-number {
+  font-size: 26px;
+  font-weight: 600;
+  color: black;
+}
