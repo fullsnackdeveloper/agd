@@ -151,6 +151,8 @@ export const makeRoom = async (g, block, direction, roomNumber, enterance, final
     case 'left':
       doorDirection = 'right';
       break;
+    default:
+      break;
   }
   if (roomNumber === 'e') {
     roomBlocks.push(block)
