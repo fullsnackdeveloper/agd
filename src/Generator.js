@@ -1,6 +1,6 @@
 import './App.css';
 
-import { CHAIN_ROOM_MAX, MAX_HEIGHT, MAX_WIDTH, ROOM_MAX } from './settings';
+import { CHAIN_ROOM_MAX, MAX_HEIGHT, MAX_WIDTH } from './settings';
 import React, { Component } from 'react';
 import { getNextBlock, getRandomDirection, getRandomInt, getStartingBlock, makeRoom, surroundings } from './utils';
 
