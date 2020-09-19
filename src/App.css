@@ -179,11 +179,12 @@ button:hover {
 }
 
 .corner {
-  width: 30px;
+  width: 32px;
   height: 30px;
   background-image: url("./images//corner.png");
-  background-size: cover;
+  background-size: contain;
   background-position: center center;
+  background-repeat: no-repeat;
   position: absolute;
   z-index: 230;
 }

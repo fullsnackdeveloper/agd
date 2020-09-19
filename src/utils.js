@@ -220,7 +220,6 @@ export const howManyDoors = async () => {
 }
 
 const addDoors = async (g, roomBlocks, doorCount, doorsPlaced = 0) => {
-  console.log(g)
   let newGrid = g;
   let doorBlocks = [];
   roomBlocks.forEach((b) => {
