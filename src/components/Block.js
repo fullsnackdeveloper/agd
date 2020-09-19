@@ -17,8 +17,8 @@ const Block = props => {
       corners.push('down-left');
     if (walls.includes('down') && walls.includes('right'))
       corners.push('down-right');
-    return corners.map(c => {
-      return <div className={`corner ${c}`}></div>
+    return corners.map((c, index) => {
+      return <div key={index} className={`corner ${c}`}></div>
     })
   }
 
