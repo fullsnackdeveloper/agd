@@ -7,6 +7,10 @@
   padding: 30px;
 }
 
+body {
+  background: black;
+}
+
 header {
   margin-bottom: 30px;
 }
@@ -37,11 +41,10 @@ button:hover {
 }
 
 .Block {
-  width: 150px;
-  height: 150px;
-  /* margin: 2px; */
-  background: #f0f0f0;
-  color: black;
+  width: 110px;
+  height: 110px;
+  color: #f0f0f0;
+  background: black;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,12 +78,12 @@ button:hover {
   top: -20px;
 }
 .hasDoor.right:after {
-  right: -42px;
+  right: -34px;
   top: 50%;
   transform: translateY(-50%) rotate(-90deg);
 }
 .hasDoor.left:after {
-  left: -42px;
+  left: -34px;
   top: 50%;
   transform: translateY(-50%) rotate(90deg);
 }
@@ -126,11 +129,77 @@ button:hover {
 
 .numberPlaceholder {
   font-size: 12px;
-  color: black;
+  color: rgb(90, 90, 90);
 }
 
 .room-number {
   font-size: 26px;
   font-weight: 600;
   color: black;
+}
+
+.wall {
+  position: absolute;
+  z-index: 200;
+}
+
+.wall.up,
+.wall.down {
+  background-image: url("./images/wall-side.png");
+  background-size: cover;
+  background-position: center center;
+}
+
+.wall.left,
+.wall.right {
+  background-image: url("./images/wall-up.png");
+  background-size: cover;
+  background-position: center center;
+}
+
+.wall.up {
+  width: 100%;
+  height: 16px;
+  top: -7px;
+}
+.wall.down {
+  width: 100%;
+  height: 16px;
+  bottom: -7px;
+}
+.wall.left {
+  height: 100%;
+  width: 16px;
+  left: -7px;
+}
+.wall.right {
+  height: 100%;
+  width: 16px;
+  right: -7px;
+}
+
+.corner {
+  width: 30px;
+  height: 30px;
+  background-image: url("./images//corner.png");
+  background-size: cover;
+  background-position: center center;
+  position: absolute;
+  z-index: 230;
+}
+.corner.up-right {
+  top: -15px;
+  right: -15px;
+}
+.corner.up-left {
+  top: -15px;
+  left: -15px;
+}
+.corner.down-left {
+  bottom: -15px;
+  left: -15px;
+}
+.corner.down-right {
+  bottom: -15px;
+  right: -15px;
 }

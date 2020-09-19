@@ -79,7 +79,7 @@ export const getNextBlock = (grid, block, direction, order) => {
   if (_.isEmpty(block))
     return;
   let newGrid = _.cloneDeep(grid);
-  newGrid[block.y][block.x] = { ...block, type: 'selected', order };
+  // newGrid[block.y][block.x] = { ...block, type: 'selected', order };
   let newBlock;
   switch (direction) {
     case 'up':
@@ -103,52 +103,107 @@ export const getNextBlock = (grid, block, direction, order) => {
 export const makeRoom = async (g, block, direction, roomNumber, enterance, final) => {
   let newGrid = g;
   let radius = surroundings(newGrid, block).blocks;
-  radius = await directionOfRoom(radius, direction);
+  // radius = await directionOfRoom(radius, direction);
   let doorCount = await howManyDoors();
   let roomBlocks = [];
   for (let dir of radius) {
     switch (dir) {
       case 'up-left':
-        roomBlocks.push(g[block.y - 1][block.x - 1]);
+        roomBlocks.push({ ...g[block.y - 1][block.x - 1] });
         break;
       case 'up':
-        roomBlocks.push(g[block.y - 1][block.x]);
+        roomBlocks.push({ ...g[block.y - 1][block.x] });
         break;
       case 'up-right':
-        roomBlocks.push(g[block.y - 1][block.x + 1]);
+        roomBlocks.push({ ...g[block.y - 1][block.x + 1] });
         break;
       case 'right':
-        roomBlocks.push(g[block.y][block.x + 1]);
+        roomBlocks.push({ ...g[block.y][block.x + 1] });
         break;
       case 'down-right':
-        roomBlocks.push(g[block.y + 1][block.x + 1]);
+        roomBlocks.push({ ...g[block.y + 1][block.x + 1] });
         break;
       case 'down':
-        roomBlocks.push(g[block.y + 1][block.x]);
+        roomBlocks.push({ ...g[block.y + 1][block.x] });
         break;
       case 'down-left':
-        roomBlocks.push(g[block.y + 1][block.x - 1]);
+        roomBlocks.push({ ...g[block.y + 1][block.x - 1] });
         break;
       case 'left':
-        roomBlocks.push(g[block.y][block.x - 1]);
+        roomBlocks.push({ ...g[block.y][block.x - 1] });
         break;
       default:
         break;
     }
   }
-  roomBlocks.push(block);
+  let doorDirection = direction;
+
+  switch (direction) {
+    case 'up':
+      doorDirection = 'down';
+      break;
+    case 'down':
+      doorDirection = 'up';
+      break;
+    case 'right':
+      doorDirection = 'left';
+      break;
+    case 'left':
+      doorDirection = 'right';
+      break;
+  }
+  if (roomNumber === 'e') {
+    roomBlocks.push(block)
+  } else {
+    roomBlocks.push({ ...block, hasDoor: true, doorDirection });
+  }
   roomBlocks = roomBlocks.map(b => {
     b.roomNumber = roomNumber;
     if (enterance)
       return { ...b, type: 'enterance' }
     return { ...b, type: 'room' }
   });
+
   roomBlocks.forEach(rb => {
     newGrid[rb.y][rb.x] = { ...rb }
   });
+
+  let addedWalls = await addWalls(newGrid, roomBlocks, roomNumber);
+
   if (final)
-    return newGrid;
-  return await addDoors(newGrid, roomBlocks, doorCount);
+    return { ...addedWalls };
+  return await addDoors(addedWalls.grid, addedWalls.roomBlocks, doorCount);
+}
+
+const addWalls = async (grid, room, roomNumber) => {
+  let newGrid = grid;
+  let newRoomBlocks = [];
+  room.forEach(rb => {
+    const around = whatsAround(grid, rb);
+    let walls = [];
+    Object.entries(around).forEach(entry => {
+      const [key, value] = entry;
+      if (value.roomNumber === roomNumber)
+        return;
+      walls.push(key);
+    })
+    newRoomBlocks.push({ ...rb, walls })
+    newGrid[rb.y][rb.x] = { ...rb, walls }
+  });
+  return { grid: newGrid, roomBlocks: newRoomBlocks };
+}
+
+export const whatsAround = (grid, block) => {
+  let around = { up: {}, down: {}, left: {}, right: {} };
+  if (!!grid[block.y - 1])
+    around['up'] = { ...grid[block.y - 1][block.x] }
+  if (!!grid[block.y + 1])
+    around['down'] = { ...grid[block.y + 1][block.x] }
+  if (!!grid[block.y][block.x - 1])
+    around['left'] = { ...grid[block.y][block.x - 1] }
+  if (!!grid[block.y][block.x + 1])
+    around['right'] = { ...grid[block.y][block.x + 1] }
+  return around
 }
 
 export const howManyDoors = async () => {
@@ -163,6 +218,7 @@ export const howManyDoors = async () => {
 }
 
 const addDoors = async (g, roomBlocks, doorCount, doorsPlaced = 0) => {
+  console.log(g)
   let newGrid = g;
   let doorBlocks = [];
   roomBlocks.forEach((b) => {
@@ -187,30 +243,30 @@ const addDoors = async (g, roomBlocks, doorCount, doorsPlaced = 0) => {
   return { grid: newGrid, doorBlocks };
 }
 
-const directionOfRoom = async (radius, direction) => {
-  switch (direction) {
-    case 'up':
-      delete radius['down'];
-      delete radius['down-right'];
-      delete radius['down-left'];
-      break;
-    case 'down':
-      delete radius['up'];
-      delete radius['up-right'];
-      delete radius['up-left'];
-      break;
-    case 'right':
-      delete radius['left'];
-      delete radius['down-left'];
-      delete radius['up-left'];
-      break;
-    case 'left':
-      delete radius['right'];
-      delete radius['down-right'];
-      delete radius['up-right'];
-      break;
-    default:
-      break;
-  }
-  return await radius;
-}
+// const directionOfRoom = async (radius, direction) => {
+//   switch (direction) {
+//     case 'up':
+//       delete radius['down'];
+//       delete radius['down-right'];
+//       delete radius['down-left'];
+//       break;
+//     case 'down':
+//       delete radius['up'];
+//       delete radius['up-right'];
+//       delete radius['up-left'];
+//       break;
+//     case 'right':
+//       delete radius['left'];
+//       delete radius['down-left'];
+//       delete radius['up-left'];
+//       break;
+//     case 'left':
+//       delete radius['right'];
+//       delete radius['down-right'];
+//       delete radius['up-right'];
+//       break;
+//     default:
+//       break;
+//   }
+//   return await radius;
+// }

@@ -1,6 +1,6 @@
 import './App.css';
 
-import { MAX_HEIGHT, MAX_WIDTH, ROOM_MAX } from './settings';
+import { CHAIN_ROOM_MAX, MAX_HEIGHT, MAX_WIDTH, ROOM_MAX } from './settings';
 import React, { Component } from 'react';
 import { getNextBlock, getRandomDirection, getRandomInt, getStartingBlock, makeRoom, surroundings } from './utils';
 
@@ -12,7 +12,8 @@ class Generator extends Component {
     super();
     this.state = {
       grid: [],
-      roomCount: 0
+      roomCount: 0,
+      chainRoomMax: 0
     }
   }
 
@@ -22,6 +23,7 @@ class Generator extends Component {
 
   init = () => {
     this.setState({ roomCount: 0 })
+    this.setState({ chainRoomMax: 0 })
     const starterGrid = this.makeGrid();
     this.start(starterGrid);
   }
@@ -42,13 +44,13 @@ class Generator extends Component {
 
   start = async (starterGrid) => {
     const startingBlock = getStartingBlock();
-    const roomMade = await makeRoom(starterGrid, startingBlock, null, 0, true);
+    const roomMade = await makeRoom(starterGrid, startingBlock, null, 'e', true);
     let newGrid = await this.startChain({ ...roomMade });
     this.setState({ grid: newGrid });
   }
 
   startChain = async ({ grid, doorBlocks, chainCount = 0 }) => {
-    this.setState({ roomCount: 0 })
+    this.setState({ chainRoomMax: 0 })
     let chain = await this.takeStep({ grid, doorBlocks });
     if (chain.otherDoors && (chainCount < 5)) {
       chainCount += 1;
@@ -116,7 +118,7 @@ class Generator extends Component {
         newGrid[nextBlock.y][nextBlock.x] = nextBlock;
       }
       if (type === 'room') {
-        nextRoom = await makeRoom(newGrid, nextBlock, direction, this.state.roomCount, false, (this.state.roomCount === ROOM_MAX - 1))
+        nextRoom = await makeRoom(newGrid, nextBlock, (mainBlock.doorDirection || mainBlock.direction), this.state.roomCount, false, (this.state.chainRoomMax === CHAIN_ROOM_MAX - 1))
       }
 
       // if the next block is not a room take another step
@@ -126,7 +128,8 @@ class Generator extends Component {
 
       if (nextRoom) {
         this.setState({ roomCount: this.state.roomCount += 1 });
-        if (this.state.roomCount >= ROOM_MAX) // no more rooms, start next chain
+        this.setState({ chainRoomMax: this.state.chainRoomMax += 1 });
+        if (this.state.chainRoomMax >= CHAIN_ROOM_MAX) // no more rooms, start next chain
           return ({ ...nextRoom, otherDoors: restOfDoors })
         await this.takeStep({ ...nextRoom, otherDoors: restOfDoors });
       }
