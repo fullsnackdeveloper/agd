@@ -2,7 +2,7 @@ import './App.css';
 
 import { CHAIN_ROOM_MAX, MAX_HEIGHT, MAX_WIDTH } from './settings';
 import React, { Component } from 'react';
-import { getNextBlock, getRandomDirection, getRandomInt, getStartingBlock, makeRoom, surroundings } from './utils';
+import { getNextBlock, getRandomDirection, getRandomInt, makeRoom, surroundings } from './utils';
 
 import Block from './components/Block';
 import Timeout from 'await-timeout';
@@ -43,8 +43,7 @@ class Generator extends Component {
   }
 
   start = async (starterGrid) => {
-    const startingBlock = getStartingBlock();
-    const roomMade = await makeRoom(starterGrid, startingBlock, null, 'e', true);
+    const roomMade = await makeRoom(starterGrid, { x: 20, y: 20 }, null, 'e', true);
     let newGrid = await this.startChain({ ...roomMade });
     this.setState({ grid: newGrid });
   }
@@ -64,9 +63,39 @@ class Generator extends Component {
         delete chain.grid[d.y][d.x].hasDoor;
         delete chain.grid[d.y][d.x].doorDirection;
       }
+    });
+
+    let removeWaits = await chain.grid.filter(y => {
+      if (y.some(x => x.type))
+        return y;
+      return null;
+    });
+    let removeXColumns = [];
+    for (let x = 0; x < MAX_WIDTH; x++) {
+      let checker = [];
+      for (let y = 0; y < removeWaits.length; y++) {
+        if (removeWaits[y][x].type)
+          checker.push("check");
+      }
+      if (!checker.length)
+        removeXColumns.push(x)
+    }
+    removeXColumns.forEach(x => {
+      removeWaits = this.removeEl(removeWaits, x);
     })
-    return chain.grid;
+
+    return removeWaits;
   }
+
+
+  removeEl = (array, remIdx) => {
+    let newArry = array.map(arr => {
+      return arr.filter((el) => {
+        return el.x !== remIdx
+      });
+    });
+    return newArry
+  };
 
   takeStep = async ({ grid, currentBlock, doorBlocks, otherDoors }) => {
     let newGrid = grid; // make a copy of the grid so far
@@ -92,7 +121,7 @@ class Generator extends Component {
 
     if (mainBlock) {
       this.setState({ grid: newGrid })
-      await Timeout.set(50);
+      await Timeout.set(0.01);
 
       if (!surroundings(newGrid, mainBlock).directions.length)
         return { grid: newGrid, otherDoors: restOfDoors.filter(b => b !== mainBlock) }
@@ -137,57 +166,6 @@ class Generator extends Component {
 
     return { grid: newGrid, otherDoors: restOfDoors }
   }
-
-  // takeStep = async ({ grid, doorBlocks, currentBlock, hallwayLength = 0, otherDoors = [], prevDirection }) => {
-  //   let newGrid = grid;
-  //   if (doorBlocks) {
-  //     let randomDoor = getRandomInt(doorBlocks.length);
-  //     let mainBlock = doorBlocks[randomDoor];
-  //     let restOfDoors = doorBlocks.filter(b => b !== mainBlock);
-  //     if (restOfDoors.length)
-  //       otherDoors.push(...restOfDoors);
-  //     if (!mainBlock)
-  //       return { grid: newGrid, otherDoors };
-  //     const nextBlock = getNextBlock(newGrid, mainBlock, mainBlock.doorDirection);
-  //     console.log('wait')
-  //     await Timeout.set(1000);
-  //     await this.takeStep({ grid: newGrid, currentBlock: nextBlock, hallwayLength: hallwayLength += 1, otherDoors })
-  //     doorBlocks.forEach(async db => {
-  //       const nextBlock = getNextBlock(newGrid, db, db.doorDirection);
-  //       console.log('wait')
-  //       await Timeout.set(1000);
-  //       await this.takeStep({ grid: newGrid, currentBlock: nextBlock, hallwayLength: hallwayLength += 1 })
-  //     })
-  //   } else if (currentBlock) {
-  //     let shouldMakeRoom = getRandomInt(3) === 1;
-  //     let type = shouldMakeRoom ? 'room' : 'hallway';
-  //     if (hallwayLength > 4)
-  //       type = 'room'
-  //     if (type === 'room' && this.state.roomCount < ROOM_MAX) {
-  //       let roomCount = this.state.roomCount += 1;
-  //       this.setState({ roomCount });
-  //       const roomMade = await makeRoom(newGrid, currentBlock, currentBlock.direction, false, roomCount, (getRandomInt(10) === 3 || roomCount >= ROOM_MAX));
-  //       if (roomCount < ROOM_MAX) {
-  //         console.log('wait')
-  //         await Timeout.set(1000);
-  //         await this.takeStep({ ...roomMade, roomCount, otherDoors });
-  //       }
-  //       return await roomMade.grid;
-  //     } else if (type === 'room') {
-  //       const finalRoom = await makeRoom(newGrid, currentBlock, currentBlock.direction, false, null, true);
-  //       return await finalRoom.grid;
-  //     }
-  //     if (type === 'hallway') {
-  //       let direction = getRandomDirection(newGrid, currentBlock);
-  //       newGrid[currentBlock.y][currentBlock.x] = { ...currentBlock, type: direction ? 'hallway' : 'room', direction, prevDirection: prevDirection || currentBlock.direction };
-  //       const nextBlock = getNextBlock(newGrid, currentBlock, direction);
-  //       await this.takeStep({ grid: newGrid, currentBlock: nextBlock, otherDoors, prevDirection: direction });
-  //     }
-  //   }
-  //   console.log('wait')
-  //   await Timeout.set(1000);
-  //   return await { grid: newGrid, otherDoors };
-  // }
 
   renderGrid = () => {
     return this.state.grid.map((y, indexY) => {

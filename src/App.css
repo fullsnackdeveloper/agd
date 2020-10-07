@@ -40,11 +40,12 @@ button:hover {
 
 .grid-row {
   width: 100%;
+  display: flex;
 }
 
 .Block {
-  width: 110px;
-  height: 110px;
+  width: calc(100vw / 45);
+  height: calc(100vw / 45);
   color: #f0f0f0;
   background: black;
   display: flex;
@@ -62,7 +63,7 @@ button:hover {
   content: "";
   position: absolute;
   transform: translateX(-50%);
-  bottom: -16px;
+  bottom: -3px;
   width: 60%;
   height: 27%;
   background-image: url("./images/door.png");
@@ -72,20 +73,20 @@ button:hover {
 .hasDoor.down:after {
   left: 50%;
   transform: translateX(-50%);
-  bottom: -16px;
+  bottom: -5px;
 }
 .hasDoor.up:after {
   left: 50%;
   transform: translateX(-50%);
-  top: -20px;
+  top: -5px;
 }
 .hasDoor.right:after {
-  right: -34px;
+  right: -11px;
   top: 50%;
   transform: translateY(-50%) rotate(-90deg);
 }
 .hasDoor.left:after {
-  left: -34px;
+  left: -11px;
   top: 50%;
   transform: translateY(-50%) rotate(90deg);
 }
@@ -130,7 +131,7 @@ button:hover {
 }
 
 .numberPlaceholder {
-  font-size: 12px;
+  font-size: 8px;
   color: rgb(90, 90, 90);
 }
 
@@ -143,46 +144,47 @@ button:hover {
 .wall {
   position: absolute;
   z-index: 200;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
 }
 
 .wall.up,
 .wall.down {
-  background-image: url("./images/wall-side.png");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url("./images/wall-side.png");
   background-size: cover;
   background-position: center center;
 }
 
 .wall.left,
 .wall.right {
-  background-image: url("./images/wall-up.png");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url("./images/wall-up.png");
   background-size: cover;
   background-position: center center;
 }
 
 .wall.up {
   width: 100%;
-  height: 16px;
-  top: -7px;
+  height: 3px;
+  top: 0;
 }
 .wall.down {
   width: 100%;
-  height: 16px;
-  bottom: -7px;
+  height: 3px;
+  bottom: 0;
 }
 .wall.left {
   height: 100%;
-  width: 16px;
-  left: -7px;
+  width: 3px;
+  left: 0;
 }
 .wall.right {
   height: 100%;
-  width: 16px;
-  right: -7px;
+  width: 3px;
+  right: 0;
 }
 
 .corner {
-  width: 32px;
-  height: 30px;
+  width: 5px;
+  height: 5px;
   background-image: url("./images//corner.png");
   background-size: contain;
   background-position: center center;
@@ -191,18 +193,18 @@ button:hover {
   z-index: 230;
 }
 .corner.up-right {
-  top: -15px;
-  right: -15px;
+  top: -2px;
+  right: -2px;
 }
 .corner.up-left {
-  top: -15px;
-  left: -15px;
+  top: -2px;
+  left: -2px;
 }
 .corner.down-left {
-  bottom: -15px;
-  left: -15px;
+  bottom: -2px;
+  left: -2px;
 }
 .corner.down-right {
-  bottom: -15px;
-  right: -15px;
+  bottom: -2px;
+  right: -2px;
 }
